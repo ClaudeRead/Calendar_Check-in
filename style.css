@@ -103,10 +103,8 @@ body {
 .day-cell.future:hover { background: transparent; transform: none; }
 .day-cell.bg-green { background: var(--green); color: #fff; }
 .day-cell.bg-red { background: var(--red); color: #fff; }
-.day-cell.is-makeup { background: #D6E9F8; color: var(--ink); }
 .day-cell.bg-green:hover { background: #4CAC82; }
 .day-cell.bg-red:hover { background: #D65A5A; }
-.day-cell.is-makeup:hover { background: #C3DDF2; }
 .day-cell.today { box-shadow: 0 0 0 2px var(--gold); }
 .day-num { position: relative; z-index: 1; }
 .day-dot { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; }
@@ -142,7 +140,6 @@ body {
   background: var(--green-soft); color: var(--green); transition: transform .12s ease;
 }
 .color-btn.color-red { background: var(--red-soft); color: var(--red); }
-.color-btn.color-makeup { background: #E3F0FB; color: #2F6FED; }
 .color-btn.selected { border-color: currentColor; transform: scale(1.03); }
 .color-btn:disabled { opacity: .45; cursor: not-allowed; }
 .color-emoji { font-size: 28px; }
