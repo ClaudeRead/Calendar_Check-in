@@ -47,16 +47,38 @@
     return target.getTime();
   }
 
+  function isNextDay(prevKey, key) {
+    var p = prevKey.split('-');
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    d.setDate(d.getDate() + 1);
+    return toDateKey(d) === key;
+  }
+
+  // 历史最长连续绿色天数（含补卡绿）
+  function longestGreenStreak(records) {
+    var keys = Object.keys(records).filter(function (k) {
+      return records[k] && records[k].color === 'green';
+    }).sort();
+    var longest = 0, current = 0, prevKey = null;
+    keys.forEach(function (k) {
+      current = (prevKey && isNextDay(prevKey, k)) ? current + 1 : 1;
+      prevKey = k;
+      if (current > longest) longest = current;
+    });
+    return longest;
+  }
+
   function computeStats(records, now) {
     var today = todayKey(now);
-    var greenOnTime = 0, greenMakeup = 0, redTotal = 0;
+    var greenOnTime = 0, greenMakeup = 0, redOnTime = 0, redMakeup = 0;
     Object.keys(records).forEach(function (k) {
       var r = records[k];
       if (r && r.color === 'green') {
         if (r.is_makeup) greenMakeup++;
         else greenOnTime++;
       } else if (r && r.color === 'red') {
-        redTotal++;
+        if (r.is_makeup) redMakeup++;
+        else redOnTime++;
       }
     });
 
@@ -79,14 +101,18 @@
       }
     }
 
-    var cultivation = 5 * (greenOnTime + greenMakeup) - 10 * redTotal;
+    // 修为值只受当日签到影响（补签为 0）：当日绿 +5，当日红 -10
+    var cultivation = 5 * greenOnTime - 10 * redOnTime;
     return {
       totalGreen: greenOnTime + greenMakeup,
-      totalRed: redTotal,
+      totalRed: redOnTime + redMakeup,
       greenOnTime: greenOnTime,
       greenMakeup: greenMakeup,
-      makeupCount: greenMakeup,
+      redOnTime: redOnTime,
+      redMakeup: redMakeup,
+      makeupCount: greenMakeup + redMakeup,
       streak: streak,
+      longestStreak: longestGreenStreak(records),
       cultivation: cultivation,
       displayCultivation: Math.max(0, cultivation)
     };

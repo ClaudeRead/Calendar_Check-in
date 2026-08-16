@@ -57,7 +57,7 @@ body {
 .app-title { font-size: 34px; letter-spacing: 2px; color: var(--ink); }
 .app-subtitle { color: var(--ink-soft); margin-top: 4px; letter-spacing: 1px; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
 .stat-card {
   background: var(--card); border-radius: var(--radius); padding: 16px 8px;
   text-align: center; box-shadow: var(--shadow); border-top: 4px solid var(--green);
@@ -65,6 +65,7 @@ body {
 .stat-green { border-top-color: var(--green); }
 .stat-purple { border-top-color: var(--purple); }
 .stat-red { border-top-color: var(--red); }
+.stat-gold { border-top-color: var(--gold); }
 .stat-label { display: block; font-size: 14px; color: var(--ink-soft); }
 .stat-value { display: inline-block; font-size: 34px; line-height: 1.2; color: var(--ink); }
 .stat-unit { font-size: 13px; color: var(--ink-soft); margin-left: 2px; }

@@ -49,7 +49,7 @@ test('computeStats 统计修为/破戒/连续天数（今日绿）', () => {
   assert.strictEqual(s.totalRed, 1);
   assert.strictEqual(s.streak, 2);
   assert.strictEqual(s.cultivation, 5); // 3*5 - 1*10
-  assert.strictEqual(s.displayCultivation, 5);
+  assert.strictEqual(s.longestStreak, 2);
 });
 
 test('computeStats 今日未打卡从昨天起算', () => {
@@ -62,6 +62,7 @@ test('computeStats 今日未打卡从昨天起算', () => {
   const s = L.computeStats(records, now);
   assert.strictEqual(s.streak, 3);
   assert.strictEqual(s.cultivation, 15);
+  assert.strictEqual(s.longestStreak, 3);
 });
 
 test('computeStats 今日破戒连续天数为 0', () => {
@@ -72,9 +73,9 @@ test('computeStats 今日破戒连续天数为 0', () => {
   };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.streak, 0);
-  assert.strictEqual(s.totalRed, 1);
   assert.strictEqual(s.cultivation, -5); // 5 - 10
   assert.strictEqual(s.displayCultivation, 0);
+  assert.strictEqual(s.longestStreak, 1);
 });
 
 test('computeStats 修为值不显示负数', () => {
@@ -85,39 +86,39 @@ test('computeStats 修为值不显示负数', () => {
     '2026-08-14': { color: 'green', note: '' }
   };
   const s = L.computeStats(records, now);
-  assert.strictEqual(s.cultivation, -15); // 5 - 20
+  assert.strictEqual(s.cultivation, -15);
   assert.strictEqual(s.displayCultivation, 0);
 });
 
-test('computeStats 绿色正常 +5', () => {
+test('computeStats 当日绿色 +5', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = { '2026-08-16': { color: 'green', note: '', is_makeup: false } };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.greenOnTime, 1);
   assert.strictEqual(s.cultivation, 5);
+  assert.strictEqual(s.longestStreak, 1);
 });
 
-test('computeStats 绿色补卡按正常 +5（无消耗）', () => {
+test('computeStats 绿色补卡不影响修为值', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = { '2026-08-15': { color: 'green', note: '', is_makeup: true } };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.greenMakeup, 1);
-  assert.strictEqual(s.makeupCount, 1);
-  assert.strictEqual(s.cultivation, 5);
-  assert.strictEqual(s.displayCultivation, 5);
-  assert.strictEqual(s.streak, 1);
+  assert.strictEqual(s.cultivation, 0);
+  assert.strictEqual(s.streak, 1); // 补卡绿计入连续天数
+  assert.strictEqual(s.longestStreak, 1);
 });
 
-test('computeStats 红色补卡按破戒 -10', () => {
+test('computeStats 红色补卡不影响修为值且中断连续天数', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = { '2026-08-15': { color: 'red', note: '', is_makeup: true } };
   const s = L.computeStats(records, now);
-  assert.strictEqual(s.totalRed, 1);
-  assert.strictEqual(s.cultivation, -10);
+  assert.strictEqual(s.cultivation, 0);
   assert.strictEqual(s.streak, 0);
+  assert.strictEqual(s.longestStreak, 0);
 });
 
-test('computeStats 红色破戒扣 10', () => {
+test('computeStats 当日红色破戒扣 10', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = { '2026-08-16': { color: 'red', note: '', is_makeup: false } };
   const s = L.computeStats(records, now);
@@ -135,17 +136,48 @@ test('computeStats 补卡延续连续天数（填补断档）', () => {
   };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.streak, 3);
-  assert.strictEqual(s.cultivation, 15); // 3*5
+  assert.strictEqual(s.cultivation, 10); // 当日绿 16、14 各 +5，补卡绿 15 不生效
+  assert.strictEqual(s.longestStreak, 3);
 });
 
-test('computeStats 补卡未修复中间断档则不计入', () => {
+test('computeStats 补卡未修复中间断档则不计入当前', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = {
     '2026-08-16': { color: 'green', note: '', is_makeup: false },
     '2026-08-14': { color: 'green', note: '', is_makeup: true },
     '2026-08-13': { color: 'green', note: '', is_makeup: false }
   };
-  assert.strictEqual(L.computeStats(records, now).streak, 1);
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.streak, 1);
+  assert.strictEqual(s.longestStreak, 2); // 14、13 连成 2 天
+});
+
+test('computeStats 最长修炼天数（历史最长）', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'green', note: '' },
+    '2026-08-15': { color: 'green', note: '' },
+    '2026-08-14': { color: 'red', note: '' },
+    '2026-08-13': { color: 'green', note: '' },
+    '2026-08-12': { color: 'green', note: '' },
+    '2026-08-11': { color: 'green', note: '' },
+    '2026-08-10': { color: 'green', note: '' }
+  };
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.streak, 2); // 16、15（14 红中断）
+  assert.strictEqual(s.longestStreak, 4); // 13、12、11、10
+});
+
+test('computeStats 破戒补签也中断连续天数', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'green', note: '', is_makeup: false },
+    '2026-08-15': { color: 'red', note: '', is_makeup: true },
+    '2026-08-14': { color: 'green', note: '', is_makeup: false }
+  };
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.streak, 1); // 15 补签破戒中断
+  assert.strictEqual(s.cultivation, 10); // 当日绿 16、14 各 +5，补签红 15 不生效
 });
 
 test('getCultivationQuote 基础映射', () => {

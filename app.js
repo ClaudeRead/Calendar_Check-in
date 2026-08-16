@@ -166,6 +166,7 @@
     el('stat-cultivation').textContent = s.displayCultivation;
     el('stat-streak').textContent = s.streak;
     el('stat-break').textContent = s.totalRed;
+    el('stat-longest').textContent = s.longestStreak;
   }
 
   // ---------- 日历 ----------
