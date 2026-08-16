@@ -49,11 +49,12 @@
 
   function computeStats(records, now) {
     var today = todayKey(now);
-    var totalGreen = 0, totalRed = 0;
+    var totalGreen = 0, totalRed = 0, makeupCount = 0;
     Object.keys(records).forEach(function (k) {
       var r = records[k];
       if (r && r.color === 'green') totalGreen++;
       else if (r && r.color === 'red') totalRed++;
+      if (r && r.is_makeup) makeupCount++;
     });
 
     var todayRecord = records[today];
@@ -79,7 +80,8 @@
       totalGreen: totalGreen,
       totalRed: totalRed,
       streak: streak,
-      cultivation: totalGreen - totalRed
+      cultivation: totalGreen - totalRed - 5 * makeupCount,
+      makeupCount: makeupCount
     };
   }
 

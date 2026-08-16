@@ -8,9 +8,13 @@ create table if not exists public.records (
   date_key text not null,
   color text not null check (color in ('green', 'red')),
   note text not null default '',
+  is_makeup boolean not null default false,
   created_at timestamptz not null default now(),
   constraint records_user_date_unique unique (user_id, date_key)
 );
+
+-- 1.1 已建表的用户执行此句，为 records 增加「补卡」标记列（幂等）
+alter table public.records add column if not exists is_makeup boolean not null default false;
 
 -- 2. 用户设置表（背景图/图标 URL）
 create table if not exists public.settings (

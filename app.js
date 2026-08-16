@@ -67,10 +67,10 @@
   // ---------- 数据（Supabase） ----------
   async function loadRecords() {
     if (!sb || !state.user) return;
-    var r = await sb.from('records').select('date_key,color,note');
+    var r = await sb.from('records').select('date_key,color,note,is_makeup');
     if (r.error) { console.warn(r.error); return; }
     var map = {};
-    (r.data || []).forEach(function (row) { map[row.date_key] = { color: row.color, note: row.note }; });
+    (r.data || []).forEach(function (row) { map[row.date_key] = { color: row.color, note: row.note, is_makeup: !!row.is_makeup }; });
     state.records = map;
   }
 
@@ -100,13 +100,14 @@
     toast('设置已保存 ✨');
   }
 
-  async function upsertRecord(dateKey, color, note) {
+  async function upsertRecord(dateKey, color, note, isMakeup) {
     if (!sb || !state.user) return { error: { message: '未登录' } };
     return await sb.from('records').upsert({
       user_id: state.user.id,
       date_key: dateKey,
       color: color,
-      note: note
+      note: note,
+      is_makeup: !!isMakeup
     }, { onConflict: 'user_id,date_key' });
   }
 
@@ -122,7 +123,7 @@
     if (!legacy || !Object.keys(legacy).length) return;
     if (Object.keys(state.records).length > 0) return;
     var rows = Object.keys(legacy).map(function (k) {
-      return { user_id: state.user.id, date_key: k, color: legacy[k].color, note: legacy[k].note || '' };
+      return { user_id: state.user.id, date_key: k, color: legacy[k].color, note: legacy[k].note || '', is_makeup: false };
     });
     var r = await sb.from('records').upsert(rows, { onConflict: 'user_id,date_key' });
     if (!r.error) {
@@ -241,7 +242,7 @@
 
   function windowHint(st) {
     var now = new Date();
-    if (st === 'past') return '补卡不受时间限制，随时都可以哦~';
+    if (st === 'past') return '补卡不受时间限制（补卡计入连续天数，但修为 −5）';
     if (L.isInWindow(now)) return '窗口开启中！选择颜色后保存吧~';
     var diff = L.getNextWindowTarget(now) - now.getTime();
     var mins = Math.floor(diff / 60000);
@@ -280,14 +281,19 @@
     }
     var color = state.selectedColor;
     var note = el('note-input').value.trim();
+    var isMakeup = L.getCheckinState(dateKey, new Date()) === 'past';
     el('save-btn').disabled = true;
-    var r = await upsertRecord(dateKey, color, note);
+    var r = await upsertRecord(dateKey, color, note, isMakeup);
     el('save-btn').disabled = false;
     if (r.error) { toast('保存失败：' + (r.error.message || '')); return; }
-    state.records[dateKey] = { color: color, note: note };
+    state.records[dateKey] = { color: color, note: note, is_makeup: isMakeup };
     closeCheckin();
     refresh();
-    toast(color === 'green' ? '今日修为 +1 ✨' : '记下破戒，明日再战！');
+    if (isMakeup) {
+      toast(color === 'green' ? '补卡成功：连续天数已延续，修为 −5' : '补记破戒：修为 −6');
+    } else {
+      toast(color === 'green' ? '今日修为 +1 ✨' : '记下破戒，明日再战！');
+    }
     maybeShowQuote(L.computeStats(state.records, new Date()).cultivation);
   }
 

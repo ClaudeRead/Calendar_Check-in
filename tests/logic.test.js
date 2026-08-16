@@ -85,6 +85,50 @@ test('computeStats 修为可为负', () => {
   assert.strictEqual(L.computeStats(records, now).cultivation, -1);
 });
 
+test('computeStats 补卡扣修为5（绿色补卡净-4）', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'green', note: '', is_makeup: false },
+    '2026-08-15': { color: 'green', note: '', is_makeup: true },
+    '2026-08-14': { color: 'green', note: '', is_makeup: false }
+  };
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.totalGreen, 3);
+  assert.strictEqual(s.makeupCount, 1);
+  assert.strictEqual(s.cultivation, -2); // 3 - 0 - 5
+});
+
+test('computeStats 红色补卡净-6', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'red', note: '', is_makeup: true }
+  };
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.totalRed, 1);
+  assert.strictEqual(s.cultivation, -6); // -1 - 5
+  assert.strictEqual(s.streak, 0);
+});
+
+test('computeStats 补卡延续连续天数（填补断档）', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'green', note: '', is_makeup: false },
+    '2026-08-15': { color: 'green', note: '', is_makeup: true },
+    '2026-08-14': { color: 'green', note: '', is_makeup: false }
+  };
+  assert.strictEqual(L.computeStats(records, now).streak, 3);
+});
+
+test('computeStats 补卡未修复中间断档则不计入', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'green', note: '', is_makeup: false },
+    '2026-08-14': { color: 'green', note: '', is_makeup: true }, // 15号仍空缺
+    '2026-08-13': { color: 'green', note: '', is_makeup: false }
+  };
+  assert.strictEqual(L.computeStats(records, now).streak, 1); // 只到今天
+});
+
 test('getCultivationQuote 基础映射', () => {
   assert.strictEqual(L.getCultivationQuote(9), '善恶一时妄念，荣枯都不关心');
   assert.strictEqual(L.getCultivationQuote(18), '无念方能静，静中气自平');
