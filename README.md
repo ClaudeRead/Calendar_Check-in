@@ -96,12 +96,20 @@ Calendar_Check-in/
 ├── sw.js                           # Service Worker（离线缓存 + 通知点击）
 ├── supabase-config.js              # Supabase 连接配置（公开）
 ├── supabase-schema.sql             # 建表 + 行级权限脚本
+├── reset-data.sql                  # 数据初始化（清空）脚本
 ├── vendor/supabase.min.js          # Supabase JS SDK（本地化，不依赖 CDN）
 ├── scripts/generate-icons.mjs      # PWA 图标生成脚本
 ├── icons/                          # 生成的熊猫图标
 ├── tests/logic.test.js             # 单元测试
 └── .github/workflows/remind.yml    # 定时微信提醒
 ```
+
+## 🧹 数据重置（初始化）
+
+需要清空所有打卡记录 / 设置、重新开始时：
+1. Supabase 控制台 → **SQL Editor** → New query。
+2. 粘贴 `reset-data.sql` 全部内容 → Run。
+3. 刷新页面即可看到已清空。
 
 ## 说明
 
