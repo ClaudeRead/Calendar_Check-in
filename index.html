@@ -43,14 +43,11 @@
 
   <!-- 主应用视图 -->
   <main class="app hidden" id="app-view">
+    <button id="settings-btn" class="settings-btn" type="button" aria-label="设置">⚙️ 设置</button>
     <header class="app-header">
-      <div class="mascot" aria-hidden="true">🐼</div>
+      <span class="mascot" aria-hidden="true">🐼</span>
       <h1 class="app-title">修仙打卡器</h1>
       <p class="app-subtitle">每日一修，道心不破</p>
-      <div class="user-bar">
-        <span id="user-email" class="user-email"></span>
-        <button id="settings-btn" class="settings-btn" type="button">⚙️ 设置</button>
-      </div>
     </header>
 
     <section class="stats">
@@ -165,6 +162,7 @@
     <div class="modal settings-modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="settings-close" type="button" aria-label="关闭">✕</button>
       <h2 class="modal-title">设置</h2>
+      <p class="settings-email" id="settings-email"></p>
       <label class="note-label" for="bg-input">背景图 URL（留空则用默认）</label>
       <input id="bg-input" class="note-input" type="url" placeholder="https://…/背景图.jpg">
       <label class="note-label" for="icon-input">图标 URL（留空则用默认熊猫）</label>
@@ -172,19 +170,6 @@
       <div class="modal-actions">
         <button id="settings-signout" class="btn btn-ghost" type="button">退出登录</button>
         <button id="settings-save" class="btn btn-primary" type="button">保存设置</button>
-      </div>
-      <button id="settings-reset" class="btn-danger-full" type="button">重置全部数据</button>
-    </div>
-  </div>
-
-  <!-- 重置确认弹窗 -->
-  <div class="modal-backdrop" id="reset-modal">
-    <div class="modal reset-modal" role="dialog" aria-modal="true">
-      <h2 class="modal-title">确认重置？</h2>
-      <p class="confirm-hint">将清空你的所有打卡记录和设置，且不可恢复！</p>
-      <div class="modal-actions">
-        <button id="reset-cancel" class="btn btn-ghost" type="button">取消</button>
-        <button id="reset-ok" class="btn btn-red-solid" type="button">确认重置</button>
       </div>
     </div>
   </div>

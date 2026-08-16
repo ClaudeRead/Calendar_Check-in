@@ -106,8 +106,10 @@ Calendar_Check-in/
 
 ## 🧹 数据重置（初始化）
 
-- **一键重置（推荐）**：打开应用 → ⚙️ 设置 → 点「**重置全部数据**」→ 确认，即可清空所有打卡记录和设置。
-- **SQL 方式（备选）**：Supabase 控制台 → SQL Editor → 粘贴 `reset-data.sql` 全部内容 → Run。
+需要清空所有打卡记录 / 设置、重新开始时：
+1. Supabase 控制台 → **SQL Editor** → New query。
+2. 粘贴 `reset-data.sql` 全部内容 → Run。
+3. 刷新页面即可看到已清空。
 
 ## 说明
 

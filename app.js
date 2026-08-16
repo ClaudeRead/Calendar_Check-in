@@ -333,6 +333,7 @@
   function openSettings() {
     el('bg-input').value = state.settings.background_url;
     el('icon-input').value = state.settings.icon_url;
+    el('settings-email').textContent = '当前账号：' + (state.user ? state.user.email : '');
     el('settings-modal').classList.add('open');
   }
   function closeSettings() { el('settings-modal').classList.remove('open'); }
@@ -345,25 +346,6 @@
     state.settings.icon_url = icon;
     await saveSettings();
     closeSettings();
-  }
-
-  function openResetConfirm() { el('reset-modal').classList.add('open'); }
-  function closeResetConfirm() { el('reset-modal').classList.remove('open'); }
-
-  async function doReset() {
-    closeResetConfirm();
-    if (!sb || !state.user) return;
-    var r1 = await sb.from('records').delete().eq('user_id', state.user.id);
-    if (r1.error) { toast('重置失败：' + (r1.error.message || '')); return; }
-    await sb.from('settings').delete().eq('user_id', state.user.id);
-    state.records = {};
-    state.settings = { background_url: '', icon_url: '' };
-    try { localStorage.removeItem(LEGACY_KEY); } catch (e) {}
-    applyBackground();
-    applyIcon();
-    closeSettings();
-    refresh();
-    toast('数据已重置 ✨');
   }
 
   // ---------- 通用 ----------
@@ -387,7 +369,6 @@
     await loadRecords();
     await loadSettings();
     await maybeMigrate();
-    el('user-email').textContent = state.user.email || '';
     refresh();
   }
 
@@ -428,10 +409,6 @@
     el('settings-modal').addEventListener('click', function (e) { if (e.target === this) closeSettings(); });
     el('settings-save').addEventListener('click', saveSettingsClick);
     el('settings-signout').addEventListener('click', signOut);
-    el('settings-reset').addEventListener('click', openResetConfirm);
-    el('reset-cancel').addEventListener('click', closeResetConfirm);
-    el('reset-modal').addEventListener('click', function (e) { if (e.target === this) closeResetConfirm(); });
-    el('reset-ok').addEventListener('click', doReset);
   }
 
   // ---------- 初始化 ----------
