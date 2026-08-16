@@ -9,6 +9,10 @@
 
 - **在线使用**：<https://clauderead.github.io/Calendar_Check-in/>
 
+## 🖼 界面预览
+
+![修仙打卡器界面预览](preview.png)
+
 ## ✨ 功能特性
 
 - ⏰ **打卡窗口**：每日 23:00–23:30 开放打卡（窗口前 / 后显示实时倒计时）
