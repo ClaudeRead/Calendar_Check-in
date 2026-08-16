@@ -1,0 +1,10 @@
+{
+  "name": "calendar-check-in",
+  "version": "1.0.0",
+  "private": true,
+  "description": "修仙打卡器 - 可爱画风日历打卡 PWA",
+  "scripts": {
+    "test": "node --test tests/",
+    "icons": "node scripts/generate-icons.mjs"
+  }
+}

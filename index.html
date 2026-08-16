@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>修仙打卡器</title>
+  <meta name="theme-color" content="#5DBB8F">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="bg-decor" aria-hidden="true">
+    <span class="cloud c1"></span>
+    <span class="cloud c2"></span>
+    <span class="cloud c3"></span>
+  </div>
+
+  <main class="app">
+    <header class="app-header">
+      <div class="mascot" aria-hidden="true">🐼</div>
+      <h1 class="app-title">修仙打卡器</h1>
+      <p class="app-subtitle">每日一修，道心不破</p>
+    </header>
+
+    <section class="stats">
+      <div class="stat-card stat-green">
+        <span class="stat-label">修为值</span>
+        <span class="stat-value" id="stat-cultivation">0</span>
+        <span class="stat-unit">点</span>
+      </div>
+      <div class="stat-card stat-purple">
+        <span class="stat-label">连续修炼</span>
+        <span class="stat-value" id="stat-streak">0</span>
+        <span class="stat-unit">天</span>
+      </div>
+      <div class="stat-card stat-red">
+        <span class="stat-label">破戒</span>
+        <span class="stat-value" id="stat-break">0</span>
+        <span class="stat-unit">次</span>
+      </div>
+    </section>
+
+    <div class="countdown" id="countdown-box">距打卡 --:--:--</div>
+
+    <section class="calendar">
+      <div class="cal-toolbar">
+        <button id="prev-btn" class="cal-nav" type="button" aria-label="上个月">‹</button>
+        <div class="cal-title-wrap">
+          <span id="cal-title" class="cal-title">2026 年 8 月</span>
+          <button id="today-btn" class="cal-today" type="button">回今天</button>
+        </div>
+        <button id="next-btn" class="cal-nav" type="button" aria-label="下个月">›</button>
+      </div>
+      <div class="cal-week">
+        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <span><i class="dot dot-green"></i> 修为 +1</span>
+        <span><i class="dot dot-red"></i> 破戒</span>
+        <span><i class="dot dot-empty"></i> 未打卡</span>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>打卡窗口：每日 23:00 – 23:30 · 过去日期可随时补卡</p>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal" id="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close" type="button" aria-label="关闭">✕</button>
+      <h2 class="modal-title" id="modal-title">打卡</h2>
+      <div class="modal-colors">
+        <button id="color-green" class="color-btn color-green" type="button">
+          <span class="color-emoji">🟢</span><span class="color-text">修为 +1</span>
+        </button>
+        <button id="color-red" class="color-btn color-red" type="button">
+          <span class="color-emoji">🔴</span><span class="color-text">破戒</span>
+        </button>
+      </div>
+      <label class="note-label" for="note-input">今日记录（可选）</label>
+      <textarea id="note-input" class="note-input" rows="3" placeholder="写点什么，比如：打坐 1 小时 / 没忍住吃了夜宵…"></textarea>
+      <p class="window-hint" id="window-hint"></p>
+      <div class="modal-actions">
+        <button id="delete-btn" class="btn btn-ghost" type="button">删除记录</button>
+        <button id="save-btn" class="btn btn-primary" type="button">保存打卡</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="reminder-pop" id="reminder-pop">
+    <div class="reminder-card">
+      <button class="reminder-close" id="reminder-close" type="button" aria-label="关闭">✕</button>
+      <div class="reminder-panda" aria-hidden="true">🐼</div>
+      <div class="reminder-bubble">
+        <p class="reminder-text">道友！时辰到啦~</p>
+        <p class="reminder-sub">23:00–23:30 打卡，今日修为 +1 等你拿！</p>
+      </div>
+      <div class="reminder-actions">
+        <button id="reminder-later" class="btn btn-ghost" type="button">稍后再说</button>
+        <button id="reminder-go" class="btn btn-primary" type="button">去打卡 ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./logic.js"></script>
+  <script src="./app.js"></script>
+  <script src="./reminder.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (e) {
+          console.warn('SW registration failed:', e);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
