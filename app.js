@@ -163,7 +163,7 @@
   // ---------- 统计 ----------
   function updateStats() {
     var s = L.computeStats(state.records, new Date());
-    el('stat-cultivation').textContent = s.cultivation;
+    el('stat-cultivation').textContent = s.displayCultivation;
     el('stat-streak').textContent = s.streak;
     el('stat-break').textContent = s.totalRed;
   }
@@ -195,6 +195,12 @@
     var dot = document.createElement('span'); dot.className = 'day-dot';
     if (rec) dot.classList.add('dot-' + rec.color);
     div.appendChild(num); div.appendChild(dot);
+    if (rec && rec.is_makeup) {
+      var badge = document.createElement('span');
+      badge.className = 'day-badge';
+      badge.textContent = '补';
+      div.appendChild(badge);
+    }
     if (key === today) div.classList.add('today');
     if (st === 'future') div.classList.add('future');
     div.addEventListener('click', function () { onDayClick(key, st); });
@@ -242,7 +248,7 @@
 
   function windowHint(st) {
     var now = new Date();
-    if (st === 'past') return '补卡不受时间限制（补卡计入连续天数，但修为 −5）';
+    if (st === 'past') return '补卡不受时间限制（补卡计入连续天数，消耗修为 5 点）';
     if (L.isInWindow(now)) return '窗口开启中！选择颜色后保存吧~';
     var diff = L.getNextWindowTarget(now) - now.getTime();
     var mins = Math.floor(diff / 60000);
@@ -272,16 +278,32 @@
     toast('请注意自己的修为，今日修为 −1！！！');
   }
 
+  // 计算扣除某天记录后的当前修为值（补卡前判断是否够扣）
+  function cultivationWithout(dateKey) {
+    var tmp = {};
+    Object.keys(state.records).forEach(function (k) {
+      if (k !== dateKey) tmp[k] = state.records[k];
+    });
+    return L.computeStats(tmp, new Date()).cultivation;
+  }
+
   async function saveCheckin() {
     var dateKey = state.selectedDate;
     if (!dateKey) return;
-    if (!state.selectedColor) { toast('请先选择颜色：修为 +1 或 破戒'); return; }
+    if (!state.selectedColor) { toast('请先选择颜色：修为 +5 或 破戒'); return; }
     if (L.getCheckinState(dateKey, new Date()) === 'today' && !L.isInWindow(new Date())) {
       toast('今日打卡仅在 23:00–23:30 开放哦~'); return;
     }
     var color = state.selectedColor;
     var note = el('note-input').value.trim();
     var isMakeup = L.getCheckinState(dateKey, new Date()) === 'past';
+
+    // 补卡（过去日期绿色）需消耗 5 点修为，不足则拦截
+    if (isMakeup && color === 'green' && cultivationWithout(dateKey) < 5) {
+      showNotice('没有足够修为值，无法补卡，请继续修炼');
+      return;
+    }
+
     el('save-btn').disabled = true;
     var r = await upsertRecord(dateKey, color, note, isMakeup);
     el('save-btn').disabled = false;
@@ -290,11 +312,11 @@
     closeCheckin();
     refresh();
     if (isMakeup) {
-      toast(color === 'green' ? '补卡成功：连续天数已延续，修为 −5' : '补记破戒：修为 −6');
+      toast(color === 'green' ? '补卡成功：连续天数已延续，修为 −5' : '补记破戒：修为 −10');
     } else {
-      toast(color === 'green' ? '今日修为 +1 ✨' : '记下破戒，明日再战！');
+      toast(color === 'green' ? '今日修为 +5 ✨' : '破戒，修为 −10');
     }
-    maybeShowQuote(L.computeStats(state.records, new Date()).cultivation);
+    maybeShowQuote(L.computeStats(state.records, new Date()).displayCultivation);
   }
 
   async function deleteCheckin() {
@@ -317,6 +339,9 @@
     el('quote-modal').classList.add('open');
   }
   function closeQuote() { el('quote-modal').classList.remove('open'); }
+
+  function showNotice(msg) { el('notice-text').textContent = msg; el('notice-modal').classList.add('open'); }
+  function closeNotice() { el('notice-modal').classList.remove('open'); }
 
   // ---------- 设置 ----------
   function openSettings() {
@@ -390,6 +415,8 @@
 
     el('quote-close').addEventListener('click', closeQuote);
     el('quote-modal').addEventListener('click', function (e) { if (e.target === this) closeQuote(); });
+    el('notice-ok').addEventListener('click', closeNotice);
+    el('notice-modal').addEventListener('click', function (e) { if (e.target === this) closeNotice(); });
 
     el('settings-btn').addEventListener('click', openSettings);
     el('settings-close').addEventListener('click', closeSettings);

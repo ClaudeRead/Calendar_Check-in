@@ -49,12 +49,15 @@
 
   function computeStats(records, now) {
     var today = todayKey(now);
-    var totalGreen = 0, totalRed = 0, makeupCount = 0;
+    var greenOnTime = 0, greenMakeup = 0, redTotal = 0;
     Object.keys(records).forEach(function (k) {
       var r = records[k];
-      if (r && r.color === 'green') totalGreen++;
-      else if (r && r.color === 'red') totalRed++;
-      if (r && r.is_makeup) makeupCount++;
+      if (r && r.color === 'green') {
+        if (r.is_makeup) greenMakeup++;
+        else greenOnTime++;
+      } else if (r && r.color === 'red') {
+        redTotal++;
+      }
     });
 
     var todayRecord = records[today];
@@ -76,12 +79,16 @@
       }
     }
 
+    var cultivation = 5 * greenOnTime - 5 * greenMakeup - 10 * redTotal;
     return {
-      totalGreen: totalGreen,
-      totalRed: totalRed,
+      totalGreen: greenOnTime + greenMakeup,
+      totalRed: redTotal,
+      greenOnTime: greenOnTime,
+      greenMakeup: greenMakeup,
+      makeupCount: greenMakeup,
       streak: streak,
-      cultivation: totalGreen - totalRed - 5 * makeupCount,
-      makeupCount: makeupCount
+      cultivation: cultivation,
+      displayCultivation: Math.max(0, cultivation)
     };
   }
 

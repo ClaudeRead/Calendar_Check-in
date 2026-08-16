@@ -217,3 +217,16 @@ body {
 .quote-level { font-size: 13px; color: var(--gold); margin-top: 6px; letter-spacing: 1px; }
 .quote-text { font-size: 20px; color: var(--ink); line-height: 1.7; margin: 14px 0 20px; letter-spacing: 1px; }
 .quote-ok { width: 100%; }
+
+/* 补卡「补」字角标 */
+.day-badge {
+  position: absolute; top: 3px; right: 3px;
+  font-size: 10px; line-height: 1; color: #fff;
+  background: var(--gold); border-radius: 6px; padding: 2px 3px;
+  pointer-events: none;
+}
+
+/* 通用提示弹窗 */
+.notice-modal { text-align: center; }
+.notice-emoji { font-size: 48px; }
+.notice-text { font-size: 16px; color: var(--ink); line-height: 1.7; margin: 12px 0 18px; }
