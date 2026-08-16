@@ -79,7 +79,7 @@
       }
     }
 
-    var cultivation = 5 * greenOnTime - 5 * greenMakeup - 10 * redTotal;
+    var cultivation = 5 * greenOnTime - 10 * redTotal - 3 * greenMakeup;
     return {
       totalGreen: greenOnTime + greenMakeup,
       totalRed: redTotal,

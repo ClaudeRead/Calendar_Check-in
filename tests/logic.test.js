@@ -97,13 +97,13 @@ test('computeStats 绿色正常 +5', () => {
   assert.strictEqual(s.cultivation, 5);
 });
 
-test('computeStats 绿色补卡消耗 5（净 -5）', () => {
+test('computeStats 绿色补卡消耗 3（净 -3）', () => {
   const now = new Date(2026, 7, 16, 12, 0, 0);
   const records = { '2026-08-15': { color: 'green', note: '', is_makeup: true } };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.greenMakeup, 1);
   assert.strictEqual(s.makeupCount, 1);
-  assert.strictEqual(s.cultivation, -5);
+  assert.strictEqual(s.cultivation, -3);
   assert.strictEqual(s.displayCultivation, 0);
   assert.strictEqual(s.streak, 1); // 补卡绿也计入连续天数
 });
@@ -126,7 +126,7 @@ test('computeStats 补卡延续连续天数（填补断档）', () => {
   };
   const s = L.computeStats(records, now);
   assert.strictEqual(s.streak, 3);
-  assert.strictEqual(s.cultivation, 5); // 5*2 - 5*1
+  assert.strictEqual(s.cultivation, 7); // 5*2 - 3*1
 });
 
 test('computeStats 补卡未修复中间断档则不计入', () => {

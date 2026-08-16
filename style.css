@@ -101,7 +101,13 @@ body {
 .day-cell.blank { pointer-events: none; }
 .day-cell.future { color: #D8CFC4; cursor: default; }
 .day-cell.future:hover { background: transparent; transform: none; }
-.day-cell.today { box-shadow: inset 0 0 0 2px var(--green); }
+.day-cell.bg-green { background: var(--green); color: #fff; }
+.day-cell.bg-red { background: var(--red); color: #fff; }
+.day-cell.is-makeup { background: #D6E9F8; color: var(--ink); }
+.day-cell.bg-green:hover { background: #4CAC82; }
+.day-cell.bg-red:hover { background: #D65A5A; }
+.day-cell.is-makeup:hover { background: #C3DDF2; }
+.day-cell.today { box-shadow: 0 0 0 2px var(--gold); }
 .day-num { position: relative; z-index: 1; }
 .day-dot { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; }
 .day-dot.dot-green { background: var(--green); }
@@ -110,6 +116,7 @@ body {
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
 .dot-green { background: var(--green); }
 .dot-red { background: var(--red); }
+.dot-blue { background: #2F6FED; }
 .dot-empty { background: #E5DCCE; }
 
 .app-footer { text-align: center; color: var(--ink-soft); font-size: 12px; margin-top: 20px; }
@@ -135,6 +142,7 @@ body {
   background: var(--green-soft); color: var(--green); transition: transform .12s ease;
 }
 .color-btn.color-red { background: var(--red-soft); color: var(--red); }
+.color-btn.color-makeup { background: #E3F0FB; color: #2F6FED; }
 .color-btn.selected { border-color: currentColor; transform: scale(1.03); }
 .color-btn:disabled { opacity: .45; cursor: not-allowed; }
 .color-emoji { font-size: 28px; }
@@ -220,10 +228,10 @@ body {
 
 /* 补卡「补」字角标 */
 .day-badge {
-  position: absolute; top: 3px; right: 3px;
+  position: absolute; top: 2px; left: 2px;
   font-size: 10px; line-height: 1; color: #fff;
-  background: var(--gold); border-radius: 6px; padding: 2px 3px;
-  pointer-events: none;
+  background: #2F6FED; border-radius: 6px; padding: 2px 3px;
+  pointer-events: none; z-index: 2;
 }
 
 /* 通用提示弹窗 */

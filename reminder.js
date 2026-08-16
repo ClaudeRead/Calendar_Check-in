@@ -27,7 +27,7 @@
   function updateCountdown(now, inWindow, rec) {
     var box = el('countdown-box');
     if (rec) {
-      box.textContent = rec.color === 'green' ? '今日已打卡 · 修为 +1 ✨' : '今日已打卡 · 破戒 −1 😿';
+      box.textContent = rec.color === 'green' ? '今日已打卡 · 修为 +5 ✨' : '今日已打卡 · 破戒 −10 😿';
       return;
     }
     if (inWindow) { box.textContent = '打卡窗口开启中！快去打卡~'; return; }
@@ -41,7 +41,7 @@
 
   function sendNotification() {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    var body = '道友，23:00–23:30 记得打卡，今日修为 +1 等你拿~';
+    var body = '道友，23:00–23:30 记得打卡，今日修为 +5 等你拿~';
     if (navigator.serviceWorker) {
       navigator.serviceWorker.ready.then(function (reg) {
         reg.showNotification('⏰ 修仙打卡时间到！', {

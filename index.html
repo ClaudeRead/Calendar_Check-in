@@ -87,8 +87,9 @@
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-legend">
-        <span><i class="dot dot-green"></i> 修为 +1</span>
-        <span><i class="dot dot-red"></i> 破戒 −1</span>
+        <span><i class="dot dot-green"></i> 修为 +5</span>
+        <span><i class="dot dot-red"></i> 破戒 −10</span>
+        <span><i class="dot dot-blue"></i> 补卡</span>
         <span><i class="dot dot-empty"></i> 未打卡</span>
       </div>
     </section>
@@ -105,10 +106,13 @@
       <h2 class="modal-title" id="modal-title">打卡</h2>
       <div class="modal-colors">
         <button id="color-green" class="color-btn color-green" type="button">
-          <span class="color-emoji">🟢</span><span class="color-text">修为 +1</span>
+          <span class="color-emoji">🟢</span><span class="color-text">修为 +5</span>
         </button>
         <button id="color-red" class="color-btn color-red" type="button">
-          <span class="color-emoji">🔴</span><span class="color-text">破戒 −1</span>
+          <span class="color-emoji">🔴</span><span class="color-text">破戒 −10</span>
+        </button>
+        <button id="color-makeup" class="color-btn color-makeup" type="button" style="display:none">
+          <span class="color-emoji">🔵</span><span class="color-text">补卡 −3</span>
         </button>
       </div>
       <label class="note-label" for="note-input">今日记录（可选）</label>
@@ -177,7 +181,7 @@
       <div class="reminder-panda" aria-hidden="true">🐼</div>
       <div class="reminder-bubble">
         <p class="reminder-text">道友！时辰到啦~</p>
-        <p class="reminder-sub">23:00–23:30 打卡，今日修为 +1 等你拿！</p>
+        <p class="reminder-sub">23:00–23:30 打卡，今日修为 +5 等你拿！</p>
       </div>
       <div class="reminder-actions">
         <button id="reminder-later" class="btn btn-ghost" type="button">稍后再说</button>

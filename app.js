@@ -192,14 +192,17 @@
     var st = L.getCheckinState(key, new Date());
     var rec = state.records[key];
     var num = document.createElement('span'); num.className = 'day-num'; num.textContent = dayNum;
-    var dot = document.createElement('span'); dot.className = 'day-dot';
-    if (rec) dot.classList.add('dot-' + rec.color);
-    div.appendChild(num); div.appendChild(dot);
-    if (rec && rec.is_makeup) {
-      var badge = document.createElement('span');
-      badge.className = 'day-badge';
-      badge.textContent = '补';
-      div.appendChild(badge);
+    div.appendChild(num);
+    if (rec) {
+      if (rec.is_makeup) {
+        div.classList.add('is-makeup');
+        var badge = document.createElement('span');
+        badge.className = 'day-badge';
+        badge.textContent = '补';
+        div.appendChild(badge);
+      } else {
+        div.classList.add(rec.color === 'green' ? 'bg-green' : 'bg-red');
+      }
     }
     if (key === today) div.classList.add('today');
     if (st === 'future') div.classList.add('future');
@@ -215,7 +218,6 @@
   // ---------- 打卡弹窗 ----------
   function openCheckin(dateKey) {
     state.selectedDate = dateKey;
-    state.selectedColor = null;
     state.greenLocked = false;
     var rec = state.records[dateKey] || null;
     var d = parseKey(dateKey);
@@ -225,9 +227,9 @@
     else if (st === 'past') title += ' · 补卡';
     el('modal-title').textContent = title;
     el('note-input').value = rec ? (rec.note || '') : '';
-    state.selectedColor = rec ? rec.color : null;
+    state.selectedColor = st === 'past' ? 'makeup' : (rec ? rec.color : null);
     el('window-hint').textContent = windowHint(st);
-    el('delete-btn').style.display = rec ? 'inline-flex' : 'none';
+    el('delete-btn').style.display = (rec && !rec.is_makeup) ? 'inline-flex' : 'none';
     updateColorButtons();
     el('modal-backdrop').classList.add('open');
   }
@@ -238,17 +240,24 @@
   }
 
   function updateColorButtons() {
+    var st = state.selectedDate ? L.getCheckinState(state.selectedDate, new Date()) : null;
+    var isPast = st === 'past';
     var ok = state.selectedDate ? canCheck(state.selectedDate) : false;
+    el('color-green').style.display = isPast ? 'none' : 'flex';
+    el('color-red').style.display = isPast ? 'none' : 'flex';
+    el('color-makeup').style.display = isPast ? 'flex' : 'none';
     el('color-green').disabled = !ok || state.greenLocked;
     el('color-red').disabled = !ok;
+    el('color-makeup').disabled = !ok;
     el('color-green').classList.toggle('selected', state.selectedColor === 'green');
     el('color-red').classList.toggle('selected', state.selectedColor === 'red');
+    el('color-makeup').classList.toggle('selected', state.selectedColor === 'makeup');
     el('save-btn').disabled = !ok;
   }
 
   function windowHint(st) {
     var now = new Date();
-    if (st === 'past') return '补卡不受时间限制（补卡计入连续天数，消耗修为 5 点）';
+    if (st === 'past') return '补卡不受时间限制（补卡计入连续天数，消耗修为 3 点）';
     if (L.isInWindow(now)) return '窗口开启中！选择颜色后保存吧~';
     var diff = L.getNextWindowTarget(now) - now.getTime();
     var mins = Math.floor(diff / 60000);
@@ -275,7 +284,7 @@
     state.greenLocked = true;
     el('confirm-modal').classList.remove('open');
     updateColorButtons();
-    toast('请注意自己的修为，今日修为 −1！！！');
+    toast('请注意自己的修为，今日修为 −10！！！');
   }
 
   // 计算扣除某天记录后的当前修为值（补卡前判断是否够扣）
@@ -290,16 +299,16 @@
   async function saveCheckin() {
     var dateKey = state.selectedDate;
     if (!dateKey) return;
-    if (!state.selectedColor) { toast('请先选择颜色：修为 +5 或 破戒'); return; }
+    if (!state.selectedColor) { toast('请先选择颜色'); return; }
     if (L.getCheckinState(dateKey, new Date()) === 'today' && !L.isInWindow(new Date())) {
       toast('今日打卡仅在 23:00–23:30 开放哦~'); return;
     }
-    var color = state.selectedColor;
     var note = el('note-input').value.trim();
-    var isMakeup = L.getCheckinState(dateKey, new Date()) === 'past';
+    var isMakeup = state.selectedColor === 'makeup';
+    var color = isMakeup ? 'green' : state.selectedColor; // 补卡存为绿色（用于连续天数），靠 is_makeup 区分
 
-    // 补卡（过去日期绿色）需消耗 5 点修为，不足则拦截
-    if (isMakeup && color === 'green' && cultivationWithout(dateKey) < 5) {
+    // 补卡需消耗 3 点修为，不足则拦截
+    if (isMakeup && cultivationWithout(dateKey) < 3) {
       showNotice('没有足够修为值，无法补卡，请继续修炼');
       return;
     }
@@ -312,7 +321,7 @@
     closeCheckin();
     refresh();
     if (isMakeup) {
-      toast(color === 'green' ? '补卡成功：连续天数已延续，修为 −5' : '补记破戒：修为 −10');
+      toast('补卡成功：连续天数已延续，修为 −3');
     } else {
       toast(color === 'green' ? '今日修为 +5 ✨' : '破戒，修为 −10');
     }
@@ -408,6 +417,7 @@
     el('delete-btn').addEventListener('click', deleteCheckin);
     el('color-green').addEventListener('click', onGreenClick);
     el('color-red').addEventListener('click', function () { state.selectedColor = 'red'; updateColorButtons(); });
+    el('color-makeup').addEventListener('click', function () { state.selectedColor = 'makeup'; updateColorButtons(); });
 
     el('confirm-yes').addEventListener('click', confirmYes);
     el('confirm-no').addEventListener('click', confirmNo);
