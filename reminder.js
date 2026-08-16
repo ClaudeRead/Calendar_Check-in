@@ -8,6 +8,10 @@
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   function sync() {
+    if (!window.App || !window.App.isLoggedIn()) {
+      el('countdown-box').textContent = '登录后开启打卡提醒';
+      return;
+    }
     var now = new Date();
     var today = L.todayKey(now);
     var rec = window.App.getRecords()[today];
@@ -23,7 +27,7 @@
   function updateCountdown(now, inWindow, rec) {
     var box = el('countdown-box');
     if (rec) {
-      box.textContent = rec.color === 'green' ? '今日已打卡 · 修为 +1 ✨' : '今日已打卡 · 破戒 😿';
+      box.textContent = rec.color === 'green' ? '今日已打卡 · 修为 +1 ✨' : '今日已打卡 · 破戒 −1 😿';
       return;
     }
     if (inWindow) { box.textContent = '打卡窗口开启中！快去打卡~'; return; }

@@ -20,11 +20,32 @@
     <span class="cloud c3"></span>
   </div>
 
-  <main class="app">
+  <!-- 登录视图 -->
+  <div id="auth-view" class="auth-view">
+    <div class="auth-card">
+      <div class="mascot" aria-hidden="true">🐼</div>
+      <h1 class="app-title">修仙打卡器</h1>
+      <p class="app-subtitle">登录后数据跨设备同步</p>
+      <input id="auth-email" class="auth-input" type="email" placeholder="邮箱" autocomplete="email">
+      <input id="auth-password" class="auth-input" type="password" placeholder="密码（至少 6 位）" autocomplete="current-password">
+      <div class="auth-actions">
+        <button id="auth-signin-btn" class="btn btn-primary" type="button">登录</button>
+        <button id="auth-signup-btn" class="btn btn-ghost" type="button">注册</button>
+      </div>
+      <p class="auth-hint">首次使用请先「注册」，查收邮箱确认邮件后再「登录」</p>
+    </div>
+  </div>
+
+  <!-- 主应用视图 -->
+  <main class="app hidden" id="app-view">
     <header class="app-header">
       <div class="mascot" aria-hidden="true">🐼</div>
       <h1 class="app-title">修仙打卡器</h1>
       <p class="app-subtitle">每日一修，道心不破</p>
+      <div class="user-bar">
+        <span id="user-email" class="user-email"></span>
+        <button id="settings-btn" class="settings-btn" type="button">⚙️ 设置</button>
+      </div>
     </header>
 
     <section class="stats">
@@ -62,7 +83,7 @@
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-legend">
         <span><i class="dot dot-green"></i> 修为 +1</span>
-        <span><i class="dot dot-red"></i> 破戒</span>
+        <span><i class="dot dot-red"></i> 破戒 −1</span>
         <span><i class="dot dot-empty"></i> 未打卡</span>
       </div>
     </section>
@@ -72,8 +93,9 @@
     </footer>
   </main>
 
+  <!-- 打卡弹窗 -->
   <div class="modal-backdrop" id="modal-backdrop">
-    <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="modal-close" type="button" aria-label="关闭">✕</button>
       <h2 class="modal-title" id="modal-title">打卡</h2>
       <div class="modal-colors">
@@ -81,7 +103,7 @@
           <span class="color-emoji">🟢</span><span class="color-text">修为 +1</span>
         </button>
         <button id="color-red" class="color-btn color-red" type="button">
-          <span class="color-emoji">🔴</span><span class="color-text">破戒</span>
+          <span class="color-emoji">🔴</span><span class="color-text">破戒 −1</span>
         </button>
       </div>
       <label class="note-label" for="note-input">今日记录（可选）</label>
@@ -94,6 +116,46 @@
     </div>
   </div>
 
+  <!-- 绿色打卡二次确认 -->
+  <div class="modal-backdrop confirm-backdrop" id="confirm-modal">
+    <div class="modal confirm-modal" role="dialog" aria-modal="true">
+      <h2 class="modal-title">确定今日没有破戒？</h2>
+      <p class="confirm-hint">若破戒了请如实选「否」，道心为重～</p>
+      <div class="modal-actions">
+        <button id="confirm-no" class="btn btn-red-solid" type="button">否，破戒了</button>
+        <button id="confirm-yes" class="btn btn-primary" type="button">是，没破戒</button>
+      </div>
+      <button id="confirm-cancel" class="confirm-cancel" type="button">取消</button>
+    </div>
+  </div>
+
+  <!-- 修为名言弹窗 -->
+  <div class="modal-backdrop quote-backdrop" id="quote-modal">
+    <div class="modal quote-modal" role="dialog" aria-modal="true">
+      <div class="quote-scroll" aria-hidden="true">📜</div>
+      <p class="quote-level" id="quote-level">当前修为</p>
+      <p class="quote-text" id="quote-text"></p>
+      <button id="quote-close" class="btn btn-primary quote-ok" type="button">继续修炼 ✨</button>
+    </div>
+  </div>
+
+  <!-- 设置弹窗 -->
+  <div class="modal-backdrop" id="settings-modal">
+    <div class="modal settings-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="settings-close" type="button" aria-label="关闭">✕</button>
+      <h2 class="modal-title">设置</h2>
+      <label class="note-label" for="bg-input">背景图 URL（留空则用默认）</label>
+      <input id="bg-input" class="note-input" type="url" placeholder="https://…/背景图.jpg">
+      <label class="note-label" for="icon-input">图标 URL（留空则用默认熊猫）</label>
+      <input id="icon-input" class="note-input" type="url" placeholder="https://…/icon.png">
+      <div class="modal-actions">
+        <button id="settings-signout" class="btn btn-ghost" type="button">退出登录</button>
+        <button id="settings-save" class="btn btn-primary" type="button">保存设置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提醒弹窗 -->
   <div class="reminder-pop" id="reminder-pop">
     <div class="reminder-card">
       <button class="reminder-close" id="reminder-close" type="button" aria-label="关闭">✕</button>
@@ -111,6 +173,8 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="./vendor/supabase.min.js"></script>
+  <script src="./supabase-config.js"></script>
   <script src="./logic.js"></script>
   <script src="./app.js"></script>
   <script src="./reminder.js"></script>

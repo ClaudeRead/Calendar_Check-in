@@ -9,7 +9,29 @@ jobs:
   remind:
     runs-on: ubuntu-latest
     steps:
+      - name: Check if already checked in today
+        id: check
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          TODAY=$(TZ='Asia/Shanghai' date +%F)
+          echo "Beijing today: $TODAY"
+          RESP=$(curl -s -G "$SUPABASE_URL/rest/v1/records" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            --data-urlencode "date_key=eq.$TODAY" \
+            --data-urlencode "select=id")
+          echo "Query result: $RESP"
+          if echo "$RESP" | grep -q '"id"'; then
+            echo "already_checked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_checked=false" >> "$GITHUB_OUTPUT"
+          fi
+        continue-on-error: true
+
       - name: Send ServerChan reminder
+        if: steps.check.outputs.already_checked != 'true'
         env:
           SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
         run: |

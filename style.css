@@ -177,3 +177,43 @@ body {
   font-size: 14px; opacity: 0; pointer-events: none; transition: all .3s ease; z-index: 80;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== v2: 登录 / 确认 / 名言 / 设置 ===== */
+.hidden { display: none !important; }
+
+.auth-view {
+  position: relative; z-index: 1; min-height: 100vh;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.auth-view.show { display: flex; }
+.auth-card {
+  background: #fff; border-radius: 26px; padding: 32px 24px; width: 100%; max-width: 360px;
+  text-align: center; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 12px;
+  animation: pop .3s cubic-bezier(.2, 1.4, .4, 1);
+}
+.auth-input {
+  width: 100%; border: 2px solid #F0E7DA; border-radius: 14px; padding: 13px;
+  font-family: inherit; font-size: 16px; color: var(--ink);
+}
+.auth-input:focus { outline: none; border-color: var(--green); }
+.auth-actions { display: flex; gap: 10px; }
+.auth-hint { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+.user-bar { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.user-email { font-size: 13px; color: var(--ink-soft); }
+.settings-btn {
+  border: none; background: var(--purple-soft); color: var(--purple);
+  border-radius: 10px; padding: 5px 12px; cursor: pointer; font-family: inherit; font-size: 13px;
+}
+
+.confirm-hint { text-align: center; font-size: 13px; color: var(--ink-soft); margin-bottom: 16px; }
+.btn-red-solid { background: var(--red); color: #fff; }
+.btn-red-solid:hover { background: #D65A5A; }
+.confirm-cancel { display: block; margin: 14px auto 0; border: none; background: transparent; color: var(--ink-soft); cursor: pointer; font-family: inherit; font-size: 13px; }
+
+.quote-modal { text-align: center; }
+.quote-scroll { font-size: 56px; }
+.quote-level { font-size: 13px; color: var(--gold); margin-top: 6px; letter-spacing: 1px; }
+.quote-text { font-size: 20px; color: var(--ink); line-height: 1.7; margin: 14px 0 20px; letter-spacing: 1px; }
+.quote-ok { width: 100%; }

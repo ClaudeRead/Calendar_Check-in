@@ -1,6 +1,7 @@
-const CACHE = 'cultivation-v1';
+const CACHE = 'cultivation-v2';
 const ASSETS = [
   './', './index.html', './style.css', './logic.js', './app.js', './reminder.js',
+  './supabase-config.js', './vendor/supabase.min.js',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png'
 ];
 

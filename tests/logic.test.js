@@ -48,6 +48,7 @@ test('computeStats 统计修为/破戒/连续天数（今日绿）', () => {
   assert.strictEqual(s.totalGreen, 3);
   assert.strictEqual(s.totalRed, 1);
   assert.strictEqual(s.streak, 2);
+  assert.strictEqual(s.cultivation, 2);
 });
 
 test('computeStats 今日未打卡从昨天起算', () => {
@@ -57,7 +58,9 @@ test('computeStats 今日未打卡从昨天起算', () => {
     '2026-08-14': { color: 'green', note: '' },
     '2026-08-13': { color: 'green', note: '' }
   };
-  assert.strictEqual(L.computeStats(records, now).streak, 3);
+  const s = L.computeStats(records, now);
+  assert.strictEqual(s.streak, 3);
+  assert.strictEqual(s.cultivation, 3);
 });
 
 test('computeStats 今日破戒连续天数为 0', () => {
@@ -69,4 +72,42 @@ test('computeStats 今日破戒连续天数为 0', () => {
   const s = L.computeStats(records, now);
   assert.strictEqual(s.streak, 0);
   assert.strictEqual(s.totalRed, 1);
+  assert.strictEqual(s.cultivation, 0);
+});
+
+test('computeStats 修为可为负', () => {
+  const now = new Date(2026, 7, 16, 12, 0, 0);
+  const records = {
+    '2026-08-16': { color: 'red', note: '' },
+    '2026-08-15': { color: 'red', note: '' },
+    '2026-08-14': { color: 'green', note: '' }
+  };
+  assert.strictEqual(L.computeStats(records, now).cultivation, -1);
+});
+
+test('getCultivationQuote 基础映射', () => {
+  assert.strictEqual(L.getCultivationQuote(9), '善恶一时妄念，荣枯都不关心');
+  assert.strictEqual(L.getCultivationQuote(18), '无念方能静，静中气自平');
+  assert.strictEqual(L.getCultivationQuote(27), '神驭气，气留形，不须杂术自长生');
+  assert.strictEqual(L.getCultivationQuote(36), '损之又损慎前功');
+  assert.strictEqual(L.getCultivationQuote(45), '死生宠辱不须惊');
+  assert.strictEqual(L.getCultivationQuote(54), '四方上下同一空，千古万古无初终');
+  assert.strictEqual(L.getCultivationQuote(63), '万物芸芸各返根，返根复命即长存');
+  assert.strictEqual(L.getCultivationQuote(72), '为仙为佛与为儒，三教单传一个虚');
+  assert.strictEqual(L.getCultivationQuote(81), '此身早化飘萍去，独向鸿蒙顶上看');
+});
+
+test('getCultivationQuote 循环规则（>81）', () => {
+  assert.strictEqual(L.getCultivationQuote(90), '善恶一时妄念，荣枯都不关心');
+  assert.strictEqual(L.getCultivationQuote(99), '无念方能静，静中气自平');
+  assert.strictEqual(L.getCultivationQuote(108), '神驭气，气留形，不须杂术自长生');
+  assert.strictEqual(L.getCultivationQuote(162), '此身早化飘萍去，独向鸿蒙顶上看'); // 162 = 18*9 -> 第9句
+});
+
+test('getCultivationQuote 非法值返回 null', () => {
+  assert.strictEqual(L.getCultivationQuote(0), null);
+  assert.strictEqual(L.getCultivationQuote(-9), null);
+  assert.strictEqual(L.getCultivationQuote(10), null);
+  assert.strictEqual(L.getCultivationQuote(null), null);
+  assert.strictEqual(L.getCultivationQuote(undefined), null);
 });
