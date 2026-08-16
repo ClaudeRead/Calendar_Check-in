@@ -173,6 +173,19 @@
         <button id="settings-signout" class="btn btn-ghost" type="button">退出登录</button>
         <button id="settings-save" class="btn btn-primary" type="button">保存设置</button>
       </div>
+      <button id="settings-reset" class="btn-danger-full" type="button">重置全部数据</button>
+    </div>
+  </div>
+
+  <!-- 重置确认弹窗 -->
+  <div class="modal-backdrop" id="reset-modal">
+    <div class="modal reset-modal" role="dialog" aria-modal="true">
+      <h2 class="modal-title">确认重置？</h2>
+      <p class="confirm-hint">将清空你的所有打卡记录和设置，且不可恢复！</p>
+      <div class="modal-actions">
+        <button id="reset-cancel" class="btn btn-ghost" type="button">取消</button>
+        <button id="reset-ok" class="btn btn-red-solid" type="button">确认重置</button>
+      </div>
     </div>
   </div>
 

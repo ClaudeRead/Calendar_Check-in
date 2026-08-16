@@ -158,6 +158,13 @@ body {
 .btn-primary:hover { background: #4CAC82; }
 .btn-ghost { background: transparent; color: var(--ink-soft); border: 2px solid #EEE5D8; }
 .btn-ghost:hover { background: #FAF4EA; }
+.btn-danger-full {
+  width: 100%; margin-top: 12px;
+  background: transparent; color: var(--red);
+  border: 2px solid var(--red); border-radius: 14px; padding: 11px;
+  cursor: pointer; font-family: inherit; font-size: 14px; letter-spacing: 1px;
+}
+.btn-danger-full:hover { background: var(--red-soft); }
 
 /* Reminder popup */
 .reminder-pop { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 60; padding: 20px; pointer-events: none; }
