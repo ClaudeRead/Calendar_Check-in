@@ -46,7 +46,7 @@
     var email = el('auth-email').value.trim();
     var pw = el('auth-password').value;
     if (!email || !pw) { toast('请输入邮箱和密码'); return; }
-    if (pw.length < 6) { toast('密码至少 6 位'); return; }
+    if (pw.length < 8) { toast('密码至少 8 位'); return; }
     setAuthBusy(true);
     var r = await sb.auth.signUp({ email: email, password: pw });
     setAuthBusy(false);
@@ -133,9 +133,14 @@
   }
 
   // ---------- 自定义外观 ----------
+  // 只允许 http/https，防止 javascript: 等协议注入
+  function isSafeUrl(u) {
+    return /^https?:\/\//i.test(u);
+  }
+
   function applyBackground() {
     var url = state.settings.background_url;
-    if (url) {
+    if (url && isSafeUrl(url)) {
       document.body.style.backgroundImage = 'url("' + url + '"), linear-gradient(180deg, #FFF9F0, #FBF6EC)';
       document.body.style.backgroundSize = 'cover, auto';
       document.body.style.backgroundPosition = 'center, center';
@@ -151,7 +156,7 @@
   function applyIcon() {
     var url = state.settings.icon_url;
     var link = document.querySelector('link[rel="icon"]');
-    if (link && url) link.href = url;
+    if (link && url && isSafeUrl(url)) link.href = url;
   }
 
   // ---------- 统计 ----------
@@ -315,8 +320,12 @@
   }
   function closeSettings() { el('settings-modal').classList.remove('open'); }
   async function saveSettingsClick() {
-    state.settings.background_url = el('bg-input').value.trim();
-    state.settings.icon_url = el('icon-input').value.trim();
+    var bg = el('bg-input').value.trim();
+    var icon = el('icon-input').value.trim();
+    if (bg && !isSafeUrl(bg)) { toast('背景图 URL 需以 http:// 或 https:// 开头'); return; }
+    if (icon && !isSafeUrl(icon)) { toast('图标 URL 需以 http:// 或 https:// 开头'); return; }
+    state.settings.background_url = bg;
+    state.settings.icon_url = icon;
     await saveSettings();
     closeSettings();
   }

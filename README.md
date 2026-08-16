@@ -57,3 +57,21 @@ node --test tests/
 ## 说明
 - 打卡记录存 Supabase 云端，仅本人（登录账号）可读写。
 - 微信推送为纯提醒；页面内弹窗/通知按用户本地时区。
+
+## 安全加固（重要，建议全部完成）
+
+1. **注册后关闭开放注册**（防止陌生人注册占用你的项目）：
+   Supabase → Authentication → Providers → Email → 关闭 **「Allow new users to sign up」**（或开启 Disable Signups）。
+   > 顺序：先在本站注册好你自己的账号，再去关闭注册。
+
+2. **轮换 Server酱 SendKey**（若你曾在聊天/截图里公开过）：
+   [Server酱](https://sct.ftqq.com) 里重新生成 SendKey，并更新仓库 Secret `SERVERCHAN_SENDKEY`。
+
+3. **开启验证码**（可选，防机器人刷注册）：
+   Supabase → Authentication → Sign In / Providers → 开启 **hCaptcha**（需 hCaptcha 密钥）。
+
+4. **确认邮箱确认已开启**：Supabase → Authentication → Providers → Email → 勾选 **Confirm email**。
+
+5. **确认 RLS 已生效**：确认你已在 SQL Editor 里执行过 `supabase-schema.sql`，否则数据可能对外暴露。
+
+代码层面已内置：内容安全策略（CSP）、URL 协议白名单（背景/图标仅允许 http/https）、密码至少 8 位、所有用户输入均以文本方式渲染（防 XSS）。
