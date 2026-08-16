@@ -298,11 +298,11 @@
     closeCheckin();
     refresh();
     if (isMakeup) {
-      toast(color === 'green' ? '补卡成功：修为 +5，连续天数已延续' : '补记破戒：修为 −10');
+      showMakeupSuccess();
     } else {
       toast(color === 'green' ? '今日修为 +5 ✨' : '破戒，修为 −10');
+      maybeShowQuote(L.computeStats(state.records, new Date()).displayCultivation);
     }
-    maybeShowQuote(L.computeStats(state.records, new Date()).displayCultivation);
   }
 
   async function deleteCheckin() {
@@ -328,6 +328,8 @@
 
   function showNotice(msg) { el('notice-text').textContent = msg; el('notice-modal').classList.add('open'); }
   function closeNotice() { el('notice-modal').classList.remove('open'); }
+  function showMakeupSuccess() { el('makeup-success-modal').classList.add('open'); }
+  function closeMakeupSuccess() { el('makeup-success-modal').classList.remove('open'); }
 
   // ---------- 设置 ----------
   function openSettings() {
@@ -403,6 +405,8 @@
     el('quote-modal').addEventListener('click', function (e) { if (e.target === this) closeQuote(); });
     el('notice-ok').addEventListener('click', closeNotice);
     el('notice-modal').addEventListener('click', function (e) { if (e.target === this) closeNotice(); });
+    el('makeup-success-ok').addEventListener('click', closeMakeupSuccess);
+    el('makeup-success-modal').addEventListener('click', function (e) { if (e.target === this) closeMakeupSuccess(); });
 
     el('settings-btn').addEventListener('click', openSettings);
     el('settings-close').addEventListener('click', closeSettings);
